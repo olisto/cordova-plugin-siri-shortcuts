@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-siri-shortcuts",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "description": "This plugin enables the use of Siri shortcuts in Cordova.",
   "cordova": {
     "id": "cordova-plugin-siri-shortcuts",
@@ -11,8 +11,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bartwesselink/cordova-plugin-siri-shortcuts.git"
+    "url": "https://github.com/olisto/cordova-plugin-siri-shortcuts.git"
   },
-  "author": "Bart Wesselink",
+  "author": "Bart Wesselink & Remy Kabel",
   "license": "ISC"
 }
