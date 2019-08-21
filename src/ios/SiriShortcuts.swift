@@ -14,23 +14,7 @@ import IntentsUI
         return activityName
     }
 
-    @objc(donate:) func donate(_ command: CDVInvokedUrlCommand) {
-        self.commandDelegate!.run(inBackground: {
-            if #available(iOS 12.0, *) {
-                self.activity = self.createUserActivity(from: command, makeActive: true)
-
-                // tell Cordova we're all OK
-                self.sendStatusOk(command)
-
-                return
-            }
-
-            // shortcut not donated
-            self.sendStatusError(command)
-        })
-    }
-
-    @objc(present:) func present(_ command: CDVInvokedUrlCommand) {
+    @objc(add:) func add(_ command: CDVInvokedUrlCommand) {
         self.commandDelegate!.run(inBackground: {
             if #available(iOS 12.0, *) {
                 self.activity = self.createUserActivity(from: command, makeActive: false)
@@ -42,59 +26,99 @@ import IntentsUI
                     let viewController = INUIAddVoiceShortcutViewController(shortcut: shortcut)
                     viewController.delegate = self.shortcutPresentedDelegate!
 
+
                     DispatchQueue.main.async {
                         self.viewController?.present(viewController, animated: true, completion: nil)
                     }
-
-                    // tell Cordova we're all OK
-                    self.sendStatusOk(command)
-
-                    return
+                } else {
+                    // shortcut not presented
+                    self.sendStatusError(command)
                 }
-
-                self.sendStatusError(command)
-
-                return
             }
-
-            // shortcut not donated
-            self.sendStatusError(command)
         })
     }
 
-    @objc(remove:) func remove(_ command: CDVInvokedUrlCommand) {
+    @objc(edit:) func edit(_ command: CDVInvokedUrlCommand) {
         self.commandDelegate!.run(inBackground: {
             if #available(iOS 12.0, *) {
-                // convert all string values to objects, such that they can be removed
-                guard let stringIdentifiers = command.arguments[0] as? [String] else { return }
-                var persistentIdentifiers: [NSUserActivityPersistentIdentifier] = []
-
-                for stringIdentifier in stringIdentifiers {
-                    persistentIdentifiers.append(NSUserActivityPersistentIdentifier(stringIdentifier))
+                guard let uuidString = command.arguments[0] as? String else {
+                    return self.sendStatusError(command)
                 }
 
-                NSUserActivity.deleteSavedUserActivities(withPersistentIdentifiers: persistentIdentifiers, completionHandler: {
-                    self.sendStatusOk(command)
-                })
+                guard let uuid = UUID.init(uuidString: uuidString) else {
+                    return self.sendStatusError(command)
+                }
+
+                INVoiceShortcutCenter.shared.getVoiceShortcut(with: uuid) { (voiceShortcut, error) in
+                    guard let voiceShortcut = voiceShortcut else {
+                        if let error = error as NSError? {
+                            NSLog("Failed to fetch voice shortcuts with error: %@", error)
+                        }
+                        self.sendStatusError(command)
+                        return
+                    }
+                    let viewController = INUIEditVoiceShortcutViewController(voiceShortcut: voiceShortcut)
+                    viewController.delegate = self.shortcutPresentedDelegate!
+
+                    DispatchQueue.main.async {
+                        self.viewController?.present(viewController, animated: true, completion: nil)
+                    }
+                }
             } else {
+                // shortcuts not presented
                 self.sendStatusError(command)
             }
         })
     }
 
-    @objc(removeAll:) func removeAll(_ command: CDVInvokedUrlCommand) {
+    @objc(getAll:) func getAll(_ command: CDVInvokedUrlCommand) {
         self.commandDelegate!.run(inBackground: {
             if #available(iOS 12.0, *) {
-                NSUserActivity.deleteAllSavedUserActivities(completionHandler: {
-                    self.sendStatusOk(command)
-                })
+                INVoiceShortcutCenter.shared.getAllVoiceShortcuts { (voiceShortcuts, error) in
+                    guard let voiceShortcuts = voiceShortcuts else {
+                        if let error = error as NSError? {
+                            NSLog("Failed to fetch voice shortcuts with error: %@", error)
+                            self.sendStatusError(command)
+                        }
+                        return
+                    }
+
+                    var returnData = [[String:Any]]()
+
+                    for sc in voiceShortcuts {
+
+                        let title = sc.shortcut.userActivity?.title
+                        var userInfo =  sc.shortcut.userActivity?.userInfo ?? [:]
+                        let uuid = sc.identifier
+                        let persistentIdentifier = userInfo["persistentIdentifier"]
+                        let invocationPhrase = sc.invocationPhrase
+
+                        userInfo.removeValue(forKey: "persistentIdentifier")
+
+                        returnData.append([
+                            "title": title as Any,
+                            "persistentIdentifier": persistentIdentifier!,
+                            "uuid": uuid,
+                            "userInfo": userInfo,
+                            "invocationPhrase": invocationPhrase
+                            ])
+                    }
+
+                    let pluginResult = CDVPluginResult(
+                        status: CDVCommandStatus_OK,
+                        messageAs: returnData
+                    )
+
+                    self.send(pluginResult: pluginResult!, command: command)
+                }
             } else {
+                // shortcuts not presented
                 self.sendStatusError(command)
             }
         })
     }
 
-    @objc(getActivatedShortcut:) func getActivatedShortcut(_ command: CDVInvokedUrlCommand) {
+    @objc(getActivated:) func getActivated(_ command: CDVInvokedUrlCommand) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
         self.commandDelegate!.run(inBackground: {
