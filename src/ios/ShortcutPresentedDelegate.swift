@@ -19,9 +19,14 @@ class ShortcutPresentedDelegate: NSObject, INUIAddVoiceShortcutViewControllerDel
             return
         }
 
+        let returnData = [
+            "invocationPhrase": voiceShortcut?.invocationPhrase,
+            "uuid": voiceShortcut?.identifier.uuidString,
+        ]
+
         self.shortcuts.send(pluginResult: CDVPluginResult(
             status: CDVCommandStatus_OK,
-            messageAs: voiceShortcut?.invocationPhrase
+            messageAs: returnData as [AnyHashable: Any]
             ), command: command)
 
         controller.dismiss(animated: true)
@@ -41,9 +46,14 @@ class ShortcutPresentedDelegate: NSObject, INUIAddVoiceShortcutViewControllerDel
             return
         }
 
+        let returnData = [
+            "invocationPhrase": voiceShortcut?.invocationPhrase,
+            "uuid": voiceShortcut?.identifier.uuidString,
+        ]
+
         self.shortcuts.send(pluginResult: CDVPluginResult(
             status: CDVCommandStatus_OK,
-            messageAs: voiceShortcut?.invocationPhrase
+            messageAs: returnData as [AnyHashable: Any]
         ), command: command)
 
         controller.dismiss(animated: true)
@@ -51,9 +61,14 @@ class ShortcutPresentedDelegate: NSObject, INUIAddVoiceShortcutViewControllerDel
 
     @available(iOS 12.0, *)
     func editVoiceShortcutViewController(_ controller: INUIEditVoiceShortcutViewController, didDeleteVoiceShortcutWithIdentifier deletedVoiceShortcutIdentifier: UUID) {
+        let returnData = [
+            "invocationPhrase": "",
+            "uuid": "",
+        ]
+
         self.shortcuts.send(pluginResult: CDVPluginResult(
             status: CDVCommandStatus_OK,
-            messageAs: ""
+            messageAs: returnData as [AnyHashable: Any]
         ), command: command)
 
         controller.dismiss(animated: true)
