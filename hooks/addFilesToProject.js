@@ -189,6 +189,7 @@ module.exports = function (context) {
             case '.xcconfig':
               replacePlaceholdersInPlist(path.join(extensionFolder, file), placeHolderValues);
               if (fileExtension === '.xcconfig') {
+                log('helleeeeu', 'info')
                 addXcconfig = true;
                 xcconfigFileName = file;
               }
@@ -265,6 +266,7 @@ module.exports = function (context) {
         var file = pbxProject.addFile(configFile, pbxGroupKey);
         // We need the reference to add the xcconfig to the XCBuildConfiguration as baseConfigurationReference
         if (path.extname(configFile) == '.xcconfig') {
+          log('helleu 2', 'info');
           xcconfigReference = file.fileRef;
         }
       });
@@ -353,10 +355,15 @@ module.exports = function (context) {
       for (var key in configurations) {
         if (typeof configurations[key].buildSettings !== 'undefined') {
           var buildSettingsObj = configurations[key].buildSettings;
+          log('helleu 4 ' + buildSettingsObj, 'info');
           if (typeof buildSettingsObj['PRODUCT_NAME'] !== 'undefined') {
             var productName = buildSettingsObj['PRODUCT_NAME'];
             if (productName.indexOf('extension') >= 0) {
               if (addXcconfig) {
+                log('helleu 4 ' + key, 'info');
+                log('helleu 5 ' + xcconfigReference, 'info');
+                log('helleu 6 ' + xcconfigFileName, 'info');
+
                 configurations[key].baseConfigurationReference =
                   xcconfigReference + ' /* ' + xcconfigFileName + ' */';
                 log('Added xcconfig file reference to build settings!', 'info');
@@ -368,7 +375,6 @@ module.exports = function (context) {
               if (projectContainsSwiftFiles) {
                 buildSettingsObj['SWIFT_VERSION'] = '4.2';
                 buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES || 'YES';
-                buildSettingsObj['INTENT_CLASS_GENERATION_LANGUAGE'] = 'Swift';
                 log('Added build settings for swift support!', 'info');
               }
               if (addBridgingHeader) {
