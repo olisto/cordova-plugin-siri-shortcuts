@@ -126,7 +126,7 @@ module.exports = function (context) {
       var extensionBundleId = 'SiriIntents';
       log('Your extension bundle id will be: ' + bundleId + '.' + extensionBundleId, 'info');
 
-      var widgetFolder = path.join(iosFolder, extensionName);
+      var extensionFolder = path.join(iosFolder, extensionName);
       var sourceFiles = [];
       var resourceFiles = [];
       var configFiles = [];
@@ -187,7 +187,7 @@ module.exports = function (context) {
             case '.plist':
             case '.entitlements':
             case '.xcconfig':
-              replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
+              replacePlaceholdersInPlist(path.join(extensionFolder, file), placeHolderValues);
               if (fileExtension === '.xcconfig') {
                 addXcconfig = true;
                 xcconfigFileName = file;
@@ -206,7 +206,7 @@ module.exports = function (context) {
         }
       }
 
-      fs.readdirSync(widgetFolder).forEach(file => {
+      fs.readdirSync(extensionFolder).forEach(file => {
         handleFile(file);
       });
 
