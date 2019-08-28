@@ -125,6 +125,9 @@ module.exports = function(context) {
 
     // Get the widget name and location from the parameters or the config file
     var EXTENSION_PATH = getCordovaParameter("EXTENSION_PATH", contents);
+    var DEPENDENCIES = getCordovaParameter("DEPENDENCIES", contents);
+
+    var dependencies = DEPENDENCIES ? DEPENDENCIES.split(',') : [];
     var extensionName = "SiriIntents";
 
     if (EXTENSION_PATH) {
@@ -152,7 +155,21 @@ module.exports = function(context) {
       srcFolder,
       path.join(context.opts.projectRoot, 'platforms', 'ios')
     );
+
     log('Successfully copied extension folder!', 'success');
+
+    if(DEPENDENCIES) {
+      dependencies.forEach(path => {
+        var srcFile = path.join(
+            iosFolder,
+            path
+        );
+
+        copyFileSync(srcFile, iosFolder);
+      })
+    }
+
+    log('Successfully copied dependency files!', 'success');
     console.log('\x1b[0m'); // reset
 
     deferral.resolve();
