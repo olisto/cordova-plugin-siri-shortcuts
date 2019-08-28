@@ -162,6 +162,7 @@ module.exports = function(context) {
       dependencies.forEach(file => {
         var srcFile = path.join(
             iosFolder,
+            projectName,
             file
         );
 
