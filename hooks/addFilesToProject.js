@@ -355,7 +355,7 @@ module.exports = function (context) {
       for (var key in configurations) {
         if (typeof configurations[key].buildSettings !== 'undefined') {
           var buildSettingsObj = configurations[key].buildSettings;
-          log('helleu 4 ' + buildSettingsObj, 'info');
+          log('helleu 4 ' + JSON.stringify(buildSettingsObj), 'info');
           if (typeof buildSettingsObj['PRODUCT_NAME'] !== 'undefined') {
             var productName = buildSettingsObj['PRODUCT_NAME'];
             if (productName.indexOf('extension') >= 0) {
