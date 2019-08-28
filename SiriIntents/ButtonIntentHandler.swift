@@ -10,7 +10,7 @@ import Foundation
 class ActivateButtonIntentHandler: NSObject, ActivateButtonIntentHandling {
     @available(iOS 12.0, *)
     func handle(intent: ActivateButtonIntent, completion: @escaping (ActivateButtonIntentResponse) -> Void) {
-        guard let sharedData = LoadSharedData(), sharedData.isDefined() else {
+        guard let sharedData = loadSharedData(), sharedData.isDefined() else {
             completion(ActivateButtonIntentResponse(code: .failureRequiringAppLaunch, userActivity: nil))
             return
         }
