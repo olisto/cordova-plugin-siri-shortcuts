@@ -248,14 +248,14 @@ module.exports = function (context) {
 
       // Create a separate PBXGroup for the widgets files, name has to be unique and path must be in quotation marks
       var pbxGroupKey = pbxProject.pbxCreateGroup(
-        'extension',
+        'Siri',
         '"' + extensionName + '"'
       );
       if (pbxGroupKey) {
         log(
           'Successfully created empty PbxGroup for folder: ' +
           extensionName +
-          ' with alias: extension',
+          ' with alias: Siri',
           'info'
         );
       }
