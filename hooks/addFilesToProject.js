@@ -211,7 +211,7 @@ module.exports = function (context) {
       }
 
       dependencies.forEach(file => {
-        handleFile(file.trim());
+        handleFile(path.baseName(file.trim()));
       });
 
       fs.readdirSync(widgetFolder).forEach(file => {
