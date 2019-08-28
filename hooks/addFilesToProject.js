@@ -85,7 +85,6 @@ module.exports = function (context) {
 
   // Get the plugin variables from the parameters or the config file
   var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
-  var DEPENDENCIES = getCordovaParameter("DEPENDENCIES", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
@@ -126,9 +125,6 @@ module.exports = function (context) {
 
       var extensionBundleId = 'SiriIntents';
       log('Your extension bundle id will be: ' + bundleId + '.' + extensionBundleId, 'info');
-
-      var dependencies = DEPENDENCIES ? DEPENDENCIES.split(',') : [];
-      log('External dependencies are: ' + dependencies, 'info');
 
       var widgetFolder = path.join(iosFolder, extensionName);
       var sourceFiles = [];
@@ -210,15 +206,9 @@ module.exports = function (context) {
         }
       }
 
-      dependencies.forEach(file => {
-        handleFile(path.basename(file.trim()));
-      });
-
       fs.readdirSync(widgetFolder).forEach(file => {
         handleFile(file);
       });
-
-
 
       log('Found following files in your extension folder:', 'info');
       console.log('Source-files: ');
