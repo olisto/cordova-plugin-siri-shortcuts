@@ -3,7 +3,7 @@ var exec = require('cordova/exec');
 /**
  * Present shortcut to the user, will popup a view controller asking the user to add it to Siri
  * @param {object} options Options to specify for the shortcut
- * @param {string} options.persistentIdentifier Specify an identifier to uniquely identify the shortcut, in order to be able to remove it
+ * @param {string} options.id Specify an identifier to uniquely identify the shortcut, in order to be able to edit it
  * @param {string} options.title Specify a title for the shortcut, which is visible to the user as the name of the shortcut
  * @param {string} options.suggestedInvocationPhrase Specify the phrase to give the user some inspiration on what the shortcut to call
  * @param {object} options.userInfo Provide a key-value object that contains information about the shortcut, this will be returned in the getActivatedShortcut method. It is not possible to use the persistentIdentifier key, it is used internally
@@ -13,8 +13,23 @@ var exec = require('cordova/exec');
  * @param {function(error) : void} error Function to call upon unsuccessful donation, for example if the user has an iOS version < 12.0
  * @return void
  */
+exports.addActivity = function (options, success, error) {
+    exec(success, error, 'SiriShortcuts', 'add', [options.id, options.title, options.suggestedInvocationPhrase, options.userInfo, options.isEligibleForSearch, options.isEligibleForPrediction]);
+};
+
+
+/**
+ * Present shortcut to the user, will popup a view controller asking the user to add it to Siri
+ * @param {object} options Options to specify for the shortcut
+ * @param {string} options.id Specify an identifier to uniquely identify the shortcut, in order to be able to edit it
+ * @param {string} options.title Specify a title for the shortcut, which is visible to the user as the name of the shortcut
+ * @param {string} options.suggestedInvocationPhrase Specify the phrase to give the user some inspiration on what the shortcut to call
+ * @param {function() : void} success Function to call upon successful donation
+ * @param {function(error) : void} error Function to call upon unsuccessful donation, for example if the user has an iOS version < 12.0
+ * @return void
+ */
 exports.add = function (options, success, error) {
-    exec(success, error, 'SiriShortcuts', 'add', [options.persistentIdentifier, options.title, options.suggestedInvocationPhrase, options.userInfo, options.isEligibleForSearch, options.isEligibleForPrediction]);
+    exec(success, error, 'SiriShortcuts', 'add', [options.id, options.title, options.suggestedInvocationPhrase]);
 };
 
 /**

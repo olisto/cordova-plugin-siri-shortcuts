@@ -3,6 +3,7 @@ import IntentsUI
 
 @objc(SiriShortcuts) class SiriShortcuts : CDVPlugin {
     var activity: NSUserActivity?
+    var intent: INIntent?
     var shortcutPresentedDelegate: ShortcutPresentedDelegate?
 
     public static func getActivityName() -> String? {
@@ -17,6 +18,37 @@ import IntentsUI
     @objc(add:) func add(_ command: CDVInvokedUrlCommand) {
         self.commandDelegate!.run(inBackground: {
             if #available(iOS 12.0, *) {
+                self.intent = self.createIntent(from: command)
+
+                if self.intent != nil {
+                    self.shortcutPresentedDelegate = ShortcutPresentedDelegate(command: command, shortcuts: self)
+
+                    guard let intent = self.intent else {
+                        return self.sendStatusError(command)
+                    }
+
+                    guard let shortcut = INShortcut(intent: intent) else {
+                        return self.sendStatusError(command)
+                    }
+
+                    let viewController = INUIAddVoiceShortcutViewController(shortcut: shortcut)
+                    viewController.delegate = self.shortcutPresentedDelegate!
+
+                    DispatchQueue.main.async {
+                        self.viewController?.present(viewController, animated: true, completion: nil)
+                    }
+                    self.sendStatusOk(command)
+                } else {
+                    // shortcut not presented
+                    self.sendStatusError(command)
+                }
+            }
+        })
+    }
+
+    @objc(addActivity:) func addActivity(_ command: CDVInvokedUrlCommand) {
+        self.commandDelegate!.run(inBackground: {
+            if #available(iOS 12.0, *) {
                 self.activity = self.createUserActivity(from: command, makeActive: false)
 
                 if self.activity != nil {
@@ -26,10 +58,11 @@ import IntentsUI
                     let viewController = INUIAddVoiceShortcutViewController(shortcut: shortcut)
                     viewController.delegate = self.shortcutPresentedDelegate!
 
-
                     DispatchQueue.main.async {
                         self.viewController?.present(viewController, animated: true, completion: nil)
                     }
+
+                    self.sendStatusOk(command)
                 } else {
                     // shortcut not presented
                     self.sendStatusError(command)
@@ -57,12 +90,17 @@ import IntentsUI
                         self.sendStatusError(command)
                         return
                     }
+
+                    self.shortcutPresentedDelegate = ShortcutPresentedDelegate(command: command, shortcuts: self)
+
                     let viewController = INUIEditVoiceShortcutViewController(voiceShortcut: voiceShortcut)
                     viewController.delegate = self.shortcutPresentedDelegate!
 
                     DispatchQueue.main.async {
                         self.viewController?.present(viewController, animated: true, completion: nil)
                     }
+
+                    self.sendStatusOk(command)
                 }
             } else {
                 // shortcuts not presented
@@ -86,22 +124,35 @@ import IntentsUI
                     var returnData = [[String:Any]]()
 
                     for sc in voiceShortcuts {
+                        if sc.shortcut.intent != nil {
+                            let intent = sc.shortcut.intent as! ActivateButtonIntent
+                            let title = intent.title ?? ""
+                            let id = intent.id ?? ""
+                            let invocationPhrase = sc.invocationPhrase
+                            let uuid = sc.identifier.uuidString
 
-                        let title = sc.shortcut.userActivity?.title
-                        var userInfo =  sc.shortcut.userActivity?.userInfo ?? [:]
-                        let uuid = sc.identifier
-                        let persistentIdentifier = userInfo["persistentIdentifier"]
-                        let invocationPhrase = sc.invocationPhrase
-
-                        userInfo.removeValue(forKey: "persistentIdentifier")
-
-                        returnData.append([
-                            "title": title as Any,
-                            "persistentIdentifier": persistentIdentifier!,
-                            "uuid": uuid,
-                            "userInfo": userInfo,
-                            "invocationPhrase": invocationPhrase
+                            returnData.append([
+                                "title": title,
+                                "id": id,
+                                "uuid": uuid,
+                                "invocationPhrase": invocationPhrase
                             ])
+
+                        } else if sc.shortcut.userActivity != nil {
+                            let userActivity = sc.shortcut.userActivity!
+                            let title = userActivity.title ?? ""
+                            var userInfo = userActivity.userInfo ?? [:]
+                            let uuid = sc.identifier.uuidString
+                            let persistentIdentifier = userInfo["persistentIdentifier"]!
+                            let invocationPhrase = sc.invocationPhrase
+
+                            returnData.append([
+                                "title": title,
+                                "id": persistentIdentifier,
+                                "uuid": uuid,
+                                "invocationPhrase": invocationPhrase
+                            ])
+                        }
                     }
 
                     let pluginResult = CDVPluginResult(
@@ -136,7 +187,7 @@ import IntentsUI
 
                     let returnData = [
                         "title": title,
-                        "persistentIdentifier": persistentIdentifier,
+                        "id": persistentIdentifier,
                         "userInfo": userInfo,
                     ]
 
@@ -158,13 +209,32 @@ import IntentsUI
         })
     }
 
+    func createIntent(from command: CDVInvokedUrlCommand) -> INIntent? {
+        if #available(iOS 12.0, *) {
+            // extract all features
+            guard let endpoint = command.arguments[0] as? String else { return nil }
+            guard let title = command.arguments[1] as? String else { return nil }
+            let suggestedInvocationPhrase = command.arguments[2] as? String
+
+            // create shortcut
+            let intent = ActivateButtonIntent()
+            intent.title = title
+            intent.endpoint = endpoint
+            intent.suggestedInvocationPhrase = suggestedInvocationPhrase
+
+            return intent
+        } else {
+            return nil
+        }
+    }
+
     func createUserActivity(from command: CDVInvokedUrlCommand, makeActive: Bool) -> NSUserActivity? {
         if #available(iOS 12.0, *) {
             // corresponds to the NSUserActivityTypes
             guard let activityName = SiriShortcuts.getActivityName() else { return nil }
 
             // extract all features
-            guard let persistentIdentifier = command.arguments[0] as? String else { return nil }
+            guard let id = command.arguments[0] as? String else { return nil }
             guard let title = command.arguments[1] as? String else { return nil }
             let suggestedInvocationPhrase = command.arguments[2] as? String
             var userInfo = command.arguments[3] as? [String: Any] ?? [:]
@@ -177,13 +247,13 @@ import IntentsUI
                 isEligibleForPrediction = command.arguments[5] as? Bool ?? true
             }
 
-            userInfo["persistentIdentifier"] = persistentIdentifier
+            userInfo["persistentIdentifier"] = id
 
             // create shortcut
             let activity = NSUserActivity(activityType: activityName)
             activity.title = title
             activity.suggestedInvocationPhrase = suggestedInvocationPhrase
-            activity.persistentIdentifier = NSUserActivityPersistentIdentifier(persistentIdentifier)
+            activity.persistentIdentifier = NSUserActivityPersistentIdentifier(id)
             activity.isEligibleForSearch = isEligibleForSearch
             activity.isEligibleForPrediction = isEligibleForPrediction
 
