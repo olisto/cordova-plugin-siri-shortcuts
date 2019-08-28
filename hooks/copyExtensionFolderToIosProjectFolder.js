@@ -166,7 +166,9 @@ module.exports = function(context) {
             file.trim()
         );
 
-        copyFileSync(srcFile, iosFolder);
+        var destFolder = path.join(iosFolder, extensionName);
+
+        copyFileSync(srcFile, destFolder);
       })
     }
 
