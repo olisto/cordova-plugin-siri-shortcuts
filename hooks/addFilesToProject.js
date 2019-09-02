@@ -181,6 +181,9 @@ module.exports = function (context) {
               }
               sourceFiles.push(file);
               break;
+            case '.intentdefinition':
+              sourceFiles.push(file);
+              break;
               // Configuration files
             case '.plist':
             case '.entitlements':
