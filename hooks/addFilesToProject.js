@@ -378,9 +378,6 @@ module.exports = function (context) {
                 buildSettingsObj['INTENTS_CODEGEN_LANGUAGE'] = 'Swift';
                 log('Added build settings for swift support!', 'info');
               }
-              if (addFrameworkFile) {
-
-              }
               if (addBridgingHeader) {
                 buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] =
                   '"$(PROJECT_DIR)/' +
