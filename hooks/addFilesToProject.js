@@ -303,6 +303,35 @@ module.exports = function (context) {
         'info'
       );
 
+      // Also add intentdefinition files to the main target
+      var idCount = 0;
+      if (addIntentDefinitionFiles) {
+        var targets = pbxProject.pbxNativeTargetSection();
+        console.log(target);
+        console.log(targets);
+        for (var uuid in targets) {
+          if (typeof targets[uuid].name !== 'undefined') {
+            if (targets[uuid].name === projectName) {
+              sourceFiles.forEach(sourceFile => {
+                if (path.extname(sourceFile) === ".intentdefinition") {
+                  idCount++;
+                  pbxProject.addSourceFile(
+                      sourcefile,
+                      { target: uuid },
+                      pbxGroupKey
+                  );
+                }
+              })
+            }
+          }
+        }
+
+        log(
+            'Successfully added' + idCount + 'intentsdefinition files to the main target!',
+            'info'
+        );
+      }
+
       // Add a new PBXFrameworksBuildPhase for the Frameworks used by the extension (NotificationCenter.framework, libCordova.a)
       var frameworksBuildPhase = pbxProject.addBuildPhase(
         [],
@@ -350,26 +379,6 @@ module.exports = function (context) {
         'Successfully added ' + resourceFiles.length + ' resource files!',
         'info'
       );
-
-      var idCount = 0;
-      if (addIntentDefinitionFiles) {
-        var targets = pbxProject.pbxNativeTargetSection();
-        console.log(target);
-        console.log(targets);
-        for (var uuid in targets) {
-          if (typeof targets[uuid].name !== 'undefined') {
-            if (targets[uuid].name === projectName) {
-              console.log(targets[uuid]);
-            }
-          }
-        }
-
-        log(
-            'Successfully added' + idcount + 'intentsdefinition files to the main target!',
-            'info'
-        );
-      }
-
 
       // Add build settings for Swift support, bridging header and xcconfig files
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
