@@ -351,7 +351,23 @@ module.exports = function (context) {
         'info'
       );
 
-      console.log(pbxProject.pbxNativeTargetSection());
+      var idCount = 0;
+      if (addIntentDefinitionFiles) {
+        var targets = pbxProject.pbxNativeTargetSection();
+        for (var uuid in targets) {
+          if (typeof targets[uuid].name !== 'undefined') {
+            if (targets[uuid].name === projectName) {
+              console.log(targets[uuid]);
+            }
+          }
+        }
+
+        log(
+            'Successfully added' + idcount + 'intentsdefinition files to the main target!',
+            'info'
+        );
+      }
+
 
       // Add build settings for Swift support, bridging header and xcconfig files
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
