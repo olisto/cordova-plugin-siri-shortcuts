@@ -48,7 +48,7 @@ log(
 );
 
 // http://stackoverflow.com/a/26038979/5930772
-var copyFileSync = function(source, target) {
+var copyFileSync = function(source, target, prefix) {
   var targetFile = target;
 
   // If target is a directory a new file with the same name will be created
@@ -58,7 +58,12 @@ var copyFileSync = function(source, target) {
     }
   }
 
-  fs.writeFileSync(targetFile, fs.readFileSync(source));
+  if (ref) {
+    var prefixedTarget = path.join(path.dirname(targetFile), prefix + '-' + path.basename(targetFile));
+    fs.writeFileSync(prefixedTarget, fs.readFileSync(source));
+  } else {
+    fs.writeFileSync(targetFile, fs.readFileSync(source));
+  }
 };
 var copyFolderRecursiveSync = function(source, target) {
   var files = [];
@@ -168,7 +173,7 @@ module.exports = function(context) {
 
         var destFolder = path.join(iosFolder, extensionName);
 
-        copyFileSync(srcFile, destFolder);
+        copyFileSync(srcFile, destFolder, extensionName);
       })
     }
 
