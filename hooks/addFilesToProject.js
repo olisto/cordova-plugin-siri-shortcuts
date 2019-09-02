@@ -130,6 +130,7 @@ module.exports = function (context) {
       var sourceFiles = [];
       var resourceFiles = [];
       var configFiles = [];
+      var addIntentDefinitionFiles = false;
       var projectContainsSwiftFiles = false;
       var addBridgingHeader = false;
       var bridgingHeaderName;
@@ -182,6 +183,7 @@ module.exports = function (context) {
               sourceFiles.push(file);
               break;
             case '.intentdefinition':
+              addIntentDefinitionFiles = true;
               sourceFiles.push(file);
               break;
               // Configuration files
@@ -348,6 +350,8 @@ module.exports = function (context) {
         'Successfully added ' + resourceFiles.length + ' resource files!',
         'info'
       );
+
+      console.log(pbxProject.allUuids());
 
       // Add build settings for Swift support, bridging header and xcconfig files
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
