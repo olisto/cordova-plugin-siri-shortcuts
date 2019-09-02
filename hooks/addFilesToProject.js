@@ -130,7 +130,6 @@ module.exports = function (context) {
       var sourceFiles = [];
       var resourceFiles = [];
       var configFiles = [];
-      var frameworkFiles = [];
       var projectContainsSwiftFiles = false;
       var addBridgingHeader = false;
       var bridgingHeaderName;
@@ -182,9 +181,6 @@ module.exports = function (context) {
               }
               sourceFiles.push(file);
               break;
-            case '.intentdefinition':
-            case '.framework':
-              frameworkFiles.push(file);
               // Configuration files
             case '.plist':
             case '.entitlements':
@@ -321,11 +317,6 @@ module.exports = function (context) {
       var frameworkFile2 = pbxProject.addFramework('libCordova.a', {
         target: target.uuid,
       }); // seems to work because the first target is built before the second one
-      frameworkFiles.forEach(frameworkFile => {
-        pbxProject.addFramework(
-            frameworkFile,
-            { target: target.uuid });
-      });
       if (frameworkFile1 && frameworkFile2) {
         log('Successfully added frameworks needed by the extension!', 'info');
       }
