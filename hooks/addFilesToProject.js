@@ -325,7 +325,7 @@ module.exports = function (context) {
         }
 
         log(
-            'Successfully added' + idCount + 'intentsdefinition files to the main target!',
+            'Successfully added ' + idCount + ' intentdefinition files to the main target!',
             'info'
         );
       }
