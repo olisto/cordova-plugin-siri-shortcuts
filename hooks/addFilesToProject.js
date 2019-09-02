@@ -310,8 +310,8 @@ module.exports = function (context) {
         for (var uuid in targets) {
           if (typeof targets[uuid].name !== 'undefined') {
             if (targets[uuid].name === projectName) {
-              sourceFiles.forEach(sourceFile => {
-                if (path.extname(sourceFile) === ".intentdefinition") {
+              sourceFiles.forEach(sourcefile => {
+                if (path.extname(sourcefile) === ".intentdefinition") {
                   idCount++;
                   pbxProject.addSourceFile(
                       sourcefile,
