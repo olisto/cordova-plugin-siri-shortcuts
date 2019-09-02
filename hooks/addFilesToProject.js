@@ -368,6 +368,7 @@ module.exports = function (context) {
               if (projectContainsSwiftFiles) {
                 buildSettingsObj['SWIFT_VERSION'] = '4.2';
                 buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES || 'YES';
+                buildSettingsObj['INTENTS_CODEGEN_LANGUAGE'] = 'Swift';
                 log('Added build settings for swift support!', 'info');
               }
               if (addBridgingHeader) {

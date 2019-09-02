@@ -212,14 +212,14 @@ import IntentsUI
     func createIntent(from command: CDVInvokedUrlCommand) -> INIntent? {
         if #available(iOS 12.0, *) {
             // extract all features
-            guard let endpoint = command.arguments[0] as? String else { return nil }
+            guard let id = command.arguments[0] as? String else { return nil }
             guard let title = command.arguments[1] as? String else { return nil }
             let suggestedInvocationPhrase = command.arguments[2] as? String
 
             // create shortcut
             let intent = ActivateButtonIntent()
             intent.title = title
-            intent.endpoint = endpoint
+            intent.id = id
             intent.suggestedInvocationPhrase = suggestedInvocationPhrase
 
             return intent
