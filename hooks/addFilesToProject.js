@@ -354,6 +354,8 @@ module.exports = function (context) {
       var idCount = 0;
       if (addIntentDefinitionFiles) {
         var targets = pbxProject.pbxNativeTargetSection();
+        console.log(target);
+        console.log(targets);
         for (var uuid in targets) {
           if (typeof targets[uuid].name !== 'undefined') {
             if (targets[uuid].name === projectName) {
