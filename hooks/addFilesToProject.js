@@ -350,10 +350,11 @@ module.exports = function (context) {
         'Successfully added ' + resourceFiles.length + ' resource files!',
         'info'
       );
-      
+
+      console.log(pbxProject.pbxNativeTargetSection());
+
       // Add build settings for Swift support, bridging header and xcconfig files
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
-      console.log(configurations);
       for (var key in configurations) {
         if (typeof configurations[key].buildSettings !== 'undefined') {
           var buildSettingsObj = configurations[key].buildSettings;
