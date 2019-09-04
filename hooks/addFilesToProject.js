@@ -303,36 +303,6 @@ module.exports = function (context) {
           'info'
       );
 
-      console.log(sourceFiles);
-
-      // // Also add intentdefinition files to the main target
-      // var idCount = 0;
-      // if (addIntentDefinitionFiles) {
-      //   var targets = pbxProject.pbxNativeTargetSection();
-      //   for (var uuid in targets) {
-      //     console.log(targets[uuid]);
-      //     if (typeof targets[uuid].name !== 'undefined') {
-      //       if (targets[uuid].name === projectName) {
-      //         sourceFiles.forEach(sourcefile => {
-      //           if (path.extname(sourcefile) === ".intentdefinition") {
-      //             idCount++;
-      //             pbxProject.addSourceFile(
-      //                 sourcefile,
-      //                 { target: uuid },
-      //                 pbxGroupKey
-      //             );
-      //           }
-      //         })
-      //       }
-      //     }
-      //   }
-      //
-      //   log(
-      //       'Successfully added ' + idCount + ' intentdefinition files to the main target!',
-      //       'info'
-      //   );
-      // }
-
       // Add a new PBXFrameworksBuildPhase for the Frameworks used by the extension (NotificationCenter.framework, libCordova.a)
       var frameworksBuildPhase = pbxProject.addBuildPhase(
           [],
@@ -422,8 +392,6 @@ module.exports = function (context) {
           }
         }
       }
-
-      console.log(configurations);
 
       // Write the modified project back to disc
       log('Writing the modified project back to disk ...', 'info');
