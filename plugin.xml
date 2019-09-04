@@ -46,7 +46,7 @@
         <source-file src="src/ios/UserActivityDelegate.swift" />
         <source-file src="src/ios/AppDelegate+SiriShortcuts.m" />
         <source-file src="src/ios/ShortcutPresentedDelegate.swift" />
-        <source-file src="src/ios/ActivateButtonIntent.intentdefinition" />
+        <source-file src="SiriIntents/ActivateButtonIntent.intentdefinition" />
 
         <hook type="after_platform_add" src="hooks/prerequisites.js"/>
         <hook type="after_platform_add" src="hooks/copyExtensionFolderToIosProjectFolder.js"/>
