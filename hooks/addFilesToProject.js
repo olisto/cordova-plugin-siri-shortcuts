@@ -416,12 +416,15 @@ module.exports = function (context) {
               }
             } else {
               if (projectContainsSwiftFiles) {
+                console.log("hoi");
                 buildSettingsObj['INTENTS_CODEGEN_LANGUAGE'] = 'Swift';
               }
             }
           }
         }
       }
+
+      console.log(configurations);
 
       // Write the modified project back to disc
       log('Writing the modified project back to disk ...', 'info');
