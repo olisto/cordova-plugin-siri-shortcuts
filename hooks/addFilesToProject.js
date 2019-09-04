@@ -16,12 +16,12 @@ function log(logString, type) {
       throw new Error(prefix + logString + 'x1b[0m'); // reset
     case 'info':
       prefix =
-        '\x1b[40m' +
-        '\x1b[37m' +
-        '\x1b[2m' +
-        '☝️ Siri [INFO] ' +
-        '\x1b[0m\x1b[40m' +
-        '\x1b[33m'; // fgWhite, dim, reset, bgBlack, fgYellow
+          '\x1b[40m' +
+          '\x1b[37m' +
+          '\x1b[2m' +
+          '☝️ Siri [INFO] ' +
+          '\x1b[0m\x1b[40m' +
+          '\x1b[33m'; // fgWhite, dim, reset, bgBlack, fgYellow
       break;
     case 'start':
       prefix = '\x1b[40m' + '\x1b[36m'; // bgBlack, fgCyan
@@ -45,13 +45,13 @@ function getPreferenceValue (config, name) {
 }
 
 function replacePlaceholdersInPlist(plistPath, placeHolderValues) {
-    var plistContents = fs.readFileSync(plistPath, 'utf8');
-    for (var i = 0; i < placeHolderValues.length; i++) {
-        var placeHolderValue = placeHolderValues[i],
-            regexp = new RegExp(placeHolderValue.placeHolder, "g");
-        plistContents = plistContents.replace(regexp, placeHolderValue.value);
-    }
-    fs.writeFileSync(plistPath, plistContents);
+  var plistContents = fs.readFileSync(plistPath, 'utf8');
+  for (var i = 0; i < placeHolderValues.length; i++) {
+    var placeHolderValue = placeHolderValues[i],
+        regexp = new RegExp(placeHolderValue.placeHolder, "g");
+    plistContents = plistContents.replace(regexp, placeHolderValue.value);
+  }
+  fs.writeFileSync(plistPath, plistContents);
 }
 
 function getCordovaParameter(variableName, contents) {
@@ -67,8 +67,8 @@ function getCordovaParameter(variableName, contents) {
 
 console.log('\x1b[40m');
 log(
-  'Running addTargetToXcodeProject hook, patching xcode project 🦄 ',
-  'start'
+    'Running addTargetToXcodeProject hook, patching xcode project 🦄 ',
+    'start'
 );
 
 module.exports = function (context) {
@@ -79,8 +79,8 @@ module.exports = function (context) {
   }
 
   var contents = fs.readFileSync(
-    path.join(context.opts.projectRoot, 'config.xml'),
-    'utf-8'
+      path.join(context.opts.projectRoot, 'config.xml'),
+      'utf-8'
   );
 
   // Get the plugin variables from the parameters or the config file
@@ -96,8 +96,8 @@ module.exports = function (context) {
   log('Bundle id of your host app: ' + bundleId, 'info');
 
   var iosFolder = context.opts.cordova.project
-    ? context.opts.cordova.project.root
-    : path.join(context.opts.projectRoot, 'platforms/ios/');
+      ? context.opts.cordova.project.root
+      : path.join(context.opts.projectRoot, 'platforms/ios/');
   log('Folder containing your iOS project: ' + iosFolder, 'info');
 
   fs.readdir(iosFolder, function (err, data) {
@@ -109,12 +109,12 @@ module.exports = function (context) {
       projectPath = path.join(projectFolder, 'project.pbxproj');
 
       log(
-        'Parsing existing project at location: ' + projectPath + ' ...',
-        'info'
+          'Parsing existing project at location: ' + projectPath + ' ...',
+          'info'
       );
       if (context.opts.cordova.project) {
         pbxProject = context.opts.cordova.project.parseProjectFile(
-          context.opts.projectRoot
+            context.opts.projectRoot
         ).xcode;
       } else {
         pbxProject = xcode.project(projectPath);
@@ -231,9 +231,9 @@ module.exports = function (context) {
 
       // Add PBXNativeTarget to the project
       var target = pbxProject.addTarget(
-        extensionName,
-        'app_extension',
-        extensionName
+          extensionName,
+          'app_extension',
+          extensionName
       );
       if (target) {
         log('Successfully added PBXNativeTarget!', 'info');
@@ -241,15 +241,15 @@ module.exports = function (context) {
 
       // Create a separate PBXGroup for the widgets files, name has to be unique and path must be in quotation marks
       var pbxGroupKey = pbxProject.pbxCreateGroup(
-        'Siri',
-        '"' + extensionName + '"'
+          'Siri',
+          '"' + extensionName + '"'
       );
       if (pbxGroupKey) {
         log(
-          'Successfully created empty PbxGroup for folder: ' +
-          extensionName +
-          ' with alias: Siri',
-          'info'
+            'Successfully created empty PbxGroup for folder: ' +
+            extensionName +
+            ' with alias: Siri',
+            'info'
         );
       }
 
@@ -259,8 +259,8 @@ module.exports = function (context) {
       });
       pbxProject.addToPbxGroup(pbxGroupKey, customTemplateKey);
       log(
-        'Successfully added the widgets PbxGroup to cordovas CustomTemplate!',
-        'info'
+          'Successfully added the widgets PbxGroup to cordovas CustomTemplate!',
+          'info'
       );
 
       // Add files which are not part of any build phase (config)
@@ -272,16 +272,16 @@ module.exports = function (context) {
         }
       });
       log(
-        'Successfully added ' + configFiles.length + ' configuration files!',
-        'info'
+          'Successfully added ' + configFiles.length + ' configuration files!',
+          'info'
       );
 
       // Add a new PBXSourcesBuildPhase for our TodayViewController (we can't add it to the existing one because a today extension is kind of an extra app)
       var sourcesBuildPhase = pbxProject.addBuildPhase(
-        [],
-        'PBXSourcesBuildPhase',
-        'Sources',
-        target.uuid
+          [],
+          'PBXSourcesBuildPhase',
+          'Sources',
+          target.uuid
       );
       if (sourcesBuildPhase) {
         log('Successfully added PBXSourcesBuildPhase!', 'info');
@@ -290,29 +290,39 @@ module.exports = function (context) {
       // Add a new source file and add it to our PbxGroup and our newly created PBXSourcesBuildPhase
       sourceFiles.forEach(sourcefile => {
         pbxProject.addSourceFile(
-          sourcefile,
-          { target: target.uuid },
-          pbxGroupKey
+            sourcefile,
+            { target: target.uuid },
+            pbxGroupKey
         );
       });
 
       log(
-        'Successfully added ' +
-        sourceFiles.length +
-        ' source files to PbxGroup and PBXSourcesBuildPhase!',
-        'info'
+          'Successfully added ' +
+          sourceFiles.length +
+          ' source files to PbxGroup and PBXSourcesBuildPhase!',
+          'info'
       );
 
-		console.log(sourceFiles);
+      console.log(sourceFiles);
 
       // Also add intentdefinition files to the main target
       var idCount = 0;
       if (addIntentDefinitionFiles) {
         var targets = pbxProject.pbxNativeTargetSection();
         for (var uuid in targets) {
-			console.log(targets[uuid]);
+          console.log(targets[uuid]);
           if (typeof targets[uuid].name !== 'undefined') {
             if (targets[uuid].name === projectName) {
+              // Add a new PBXSourcesBuildPhase for our TodayViewController (we can't add it to the existing one because a today extension is kind of an extra app)
+              var sourcesBuildPhase = pbxProject.addBuildPhase(
+                  [],
+                  'PBXSourcesBuildPhase',
+                  'Sources',
+                  uuid
+              );
+              if (sourcesBuildPhase) {
+                log('Successfully added PBXSourcesBuildPhase!', 'info');
+              }
               sourceFiles.forEach(sourcefile => {
                 if (path.extname(sourcefile) === ".intentdefinition") {
                   idCount++;
@@ -335,10 +345,10 @@ module.exports = function (context) {
 
       // Add a new PBXFrameworksBuildPhase for the Frameworks used by the extension (NotificationCenter.framework, libCordova.a)
       var frameworksBuildPhase = pbxProject.addBuildPhase(
-        [],
-        'PBXFrameworksBuildPhase',
-        'Frameworks',
-        target.uuid
+          [],
+          'PBXFrameworksBuildPhase',
+          'Frameworks',
+          target.uuid
       );
       if (frameworksBuildPhase) {
         log('Successfully added PBXFrameworksBuildPhase!', 'info');
@@ -346,8 +356,8 @@ module.exports = function (context) {
 
       // Add the frameworks needed by our extension, add them to the existing Frameworks PbxGroup and PBXFrameworksBuildPhase
       var frameworkFile1 = pbxProject.addFramework(
-        'NotificationCenter.framework',
-        { target: target.uuid }
+          'NotificationCenter.framework',
+          { target: target.uuid }
       );
       var frameworkFile2 = pbxProject.addFramework('libCordova.a', {
         target: target.uuid,
@@ -358,10 +368,10 @@ module.exports = function (context) {
 
       // Add a new PBXResourcesBuildPhase for the Resources used by the extension (MainInterface.storyboard)
       var resourcesBuildPhase = pbxProject.addBuildPhase(
-        [],
-        'PBXResourcesBuildPhase',
-        'Resources',
-        target.uuid
+          [],
+          'PBXResourcesBuildPhase',
+          'Resources',
+          target.uuid
       );
       if (resourcesBuildPhase) {
         log('Successfully added PBXResourcesBuildPhase!', 'info');
@@ -370,15 +380,15 @@ module.exports = function (context) {
       //  Add the resource file and include it into the targest PbxResourcesBuildPhase and PbxGroup
       resourceFiles.forEach(resourcefile => {
         pbxProject.addResourceFile(
-          resourcefile,
-          { target: target.uuid },
-          pbxGroupKey
+            resourcefile,
+            { target: target.uuid },
+            pbxGroupKey
         );
       });
 
       log(
-        'Successfully added ' + resourceFiles.length + ' resource files!',
-        'info'
+          'Successfully added ' + resourceFiles.length + ' resource files!',
+          'info'
       );
 
       // Add build settings for Swift support, bridging header and xcconfig files
@@ -391,7 +401,7 @@ module.exports = function (context) {
             if (productName.indexOf(extensionName) >= 0) {
               if (addXcconfig) {
                 configurations[key].baseConfigurationReference =
-                  xcconfigReference + ' /* ' + xcconfigFileName + ' */';
+                    xcconfigReference + ' /* ' + xcconfigFileName + ' */';
                 log('Added xcconfig file reference to build settings!', 'info');
               }
               if (addEntitlementsFile) {
@@ -406,11 +416,11 @@ module.exports = function (context) {
               }
               if (addBridgingHeader) {
                 buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] =
-                  '"$(PROJECT_DIR)/' +
-                  extensionName +
-                  '/' +
-                  bridgingHeaderName +
-                  '"';
+                    '"$(PROJECT_DIR)/' +
+                    extensionName +
+                    '/' +
+                    bridgingHeaderName +
+                    '"';
                 log('Added bridging header reference to build settings!', 'info');
               }
             }
@@ -422,8 +432,8 @@ module.exports = function (context) {
       log('Writing the modified project back to disk ...', 'info');
       fs.writeFileSync(projectPath, pbxProject.writeSync());
       log(
-        'Added app extension to ' + projectName + ' xcode project',
-        'success'
+          'Added app extension to ' + projectName + ' xcode project',
+          'success'
       );
       console.log('\x1b[0m'); // reset
 

@@ -13,12 +13,12 @@ function log(logString, type) {
       throw new Error(prefix + logString + 'x1b[0m'); // reset
     case 'info':
       prefix =
-        '\x1b[40m' +
-        '\x1b[37m' +
-        '\x1b[2m' +
-        '☝️ Siri [INFO] ' +
-        '\x1b[0m\x1b[40m' +
-        '\x1b[33m'; // fgWhite, dim, reset, bgBlack, fgYellow
+          '\x1b[40m' +
+          '\x1b[37m' +
+          '\x1b[2m' +
+          '☝️ Siri [INFO] ' +
+          '\x1b[0m\x1b[40m' +
+          '\x1b[33m'; // fgWhite, dim, reset, bgBlack, fgYellow
       break;
     case 'start':
       prefix = '\x1b[40m' + '\x1b[36m'; // bgBlack, fgCyan
@@ -43,8 +43,8 @@ function getPreferenceValue (config, name) {
 
 console.log('\x1b[40m');
 log(
-  'Running copyExtensionFolderToIosProject hook, copying extension folder ...',
-  'start'
+    'Running copyExtensionFolderToIosProject hook, copying extension folder ...',
+    'start'
 );
 
 // http://stackoverflow.com/a/26038979/5930772
@@ -103,13 +103,13 @@ module.exports = function(context) {
   var deferral = new Q.defer();
 
   var contents = fs.readFileSync(
-    path.join(context.opts.projectRoot, 'config.xml'),
-    'utf-8'
+      path.join(context.opts.projectRoot, 'config.xml'),
+      'utf-8'
   );
 
   var iosFolder = context.opts.cordova.project
-    ? context.opts.cordova.project.root
-    : path.join(context.opts.projectRoot, 'platforms/ios/');
+      ? context.opts.cordova.project.root
+      : path.join(context.opts.projectRoot, 'platforms/ios/');
   fs.readdir(iosFolder, function(err, data) {
     var projectFolder;
     var projectName;
@@ -136,29 +136,29 @@ module.exports = function(context) {
     var extensionName = "SiriIntents";
 
     if (EXTENSION_PATH) {
-        srcFolder = path.join(
+      srcFolder = path.join(
           context.opts.projectRoot,
           EXTENSION_PATH,
           extensionName + '/'
-        );
+      );
     } else {
-        srcFolder = path.join(
+      srcFolder = path.join(
           context.opts.projectRoot,
           'www',
           extensionName + '/'
-        );
+      );
     }
     if (!fs.existsSync(srcFolder)) {
       log(
-        'Missing extension folder in ' + srcFolder + '. Should have the same name as your extension: ' + extensionName,
-        'error'
+          'Missing extension folder in ' + srcFolder + '. Should have the same name as your extension: ' + extensionName,
+          'error'
       );
     }
 
     // Copy widget folder
     copyFolderRecursiveSync(
-      srcFolder,
-      path.join(context.opts.projectRoot, 'platforms', 'ios')
+        srcFolder,
+        path.join(context.opts.projectRoot, 'platforms', 'ios')
     );
 
     log('Successfully copied extension folder!', 'success');
