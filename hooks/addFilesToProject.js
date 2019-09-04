@@ -305,43 +305,33 @@ module.exports = function (context) {
 
       console.log(sourceFiles);
 
-      // Also add intentdefinition files to the main target
-      var idCount = 0;
-      if (addIntentDefinitionFiles) {
-        var targets = pbxProject.pbxNativeTargetSection();
-        for (var uuid in targets) {
-          console.log(targets[uuid]);
-          if (typeof targets[uuid].name !== 'undefined') {
-            if (targets[uuid].name === projectName) {
-              // Add a new PBXSourcesBuildPhase for our TodayViewController (we can't add it to the existing one because a today extension is kind of an extra app)
-              var sourcesBuildPhase = pbxProject.addBuildPhase(
-                  [],
-                  'PBXSourcesBuildPhase',
-                  'Sources',
-                  uuid
-              );
-              if (sourcesBuildPhase) {
-                log('Successfully added PBXSourcesBuildPhase!', 'info');
-              }
-              sourceFiles.forEach(sourcefile => {
-                if (path.extname(sourcefile) === ".intentdefinition") {
-                  idCount++;
-                  pbxProject.addSourceFile(
-                      sourcefile,
-                      { target: uuid },
-                      pbxGroupKey
-                  );
-                }
-              })
-            }
-          }
-        }
-
-        log(
-            'Successfully added ' + idCount + ' intentdefinition files to the main target!',
-            'info'
-        );
-      }
+      // // Also add intentdefinition files to the main target
+      // var idCount = 0;
+      // if (addIntentDefinitionFiles) {
+      //   var targets = pbxProject.pbxNativeTargetSection();
+      //   for (var uuid in targets) {
+      //     console.log(targets[uuid]);
+      //     if (typeof targets[uuid].name !== 'undefined') {
+      //       if (targets[uuid].name === projectName) {
+      //         sourceFiles.forEach(sourcefile => {
+      //           if (path.extname(sourcefile) === ".intentdefinition") {
+      //             idCount++;
+      //             pbxProject.addSourceFile(
+      //                 sourcefile,
+      //                 { target: uuid },
+      //                 pbxGroupKey
+      //             );
+      //           }
+      //         })
+      //       }
+      //     }
+      //   }
+      //
+      //   log(
+      //       'Successfully added ' + idCount + ' intentdefinition files to the main target!',
+      //       'info'
+      //   );
+      // }
 
       // Add a new PBXFrameworksBuildPhase for the Frameworks used by the extension (NotificationCenter.framework, libCordova.a)
       var frameworksBuildPhase = pbxProject.addBuildPhase(
