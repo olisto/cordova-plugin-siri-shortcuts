@@ -302,25 +302,7 @@ module.exports = function (context) {
           ' source files to PbxGroup and PBXSourcesBuildPhase!',
           'info'
       );
-
-      // Add a new PBXFrameworksBuildPhase for the Frameworks used by the extension (NotificationCenter.framework, libCordova.a)
-      var frameworksBuildPhase = pbxProject.addBuildPhase(
-          [],
-          'PBXFrameworksBuildPhase',
-          'Frameworks',
-          target.uuid
-      );
-      if (frameworksBuildPhase) {
-        log('Successfully added PBXFrameworksBuildPhase!', 'info');
-      }
-
-      var frameworkFile = pbxProject.addFramework('libCordova.a', {
-        target: target.uuid,
-      }); // seems to work because the first target is built before the second one
-      if (frameworkFile) {
-        log('Successfully added framework needed by the extension!', 'info');
-      }
-
+      
       // Add a new PBXResourcesBuildPhase for the Resources used by the extension (MainInterface.storyboard)
       var resourcesBuildPhase = pbxProject.addBuildPhase(
           [],
