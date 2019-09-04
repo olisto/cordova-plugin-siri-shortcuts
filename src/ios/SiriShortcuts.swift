@@ -24,11 +24,11 @@ import IntentsUI
                     self.shortcutPresentedDelegate = ShortcutPresentedDelegate(command: command, shortcuts: self)
 
                     guard let intent = self.intent else {
-                        return self.sendStatusError(command)
+                        return self.sendStatusError(command, error: "Error creating intent")
                     }
 
                     guard let shortcut = INShortcut(intent: intent) else {
-                        return self.sendStatusError(command)
+                        return self.sendStatusError(command, error: "Error creating shortcut from intent")
                     }
 
                     let viewController = INUIAddVoiceShortcutViewController(shortcut: shortcut)
@@ -75,11 +75,11 @@ import IntentsUI
         self.commandDelegate!.run(inBackground: {
             if #available(iOS 12.0, *) {
                 guard let uuidString = command.arguments[0] as? String else {
-                    return self.sendStatusError(command)
+                    return self.sendStatusError(command, error: "No uuidString")
                 }
 
                 guard let uuid = UUID.init(uuidString: uuidString) else {
-                    return self.sendStatusError(command)
+                    return self.sendStatusError(command, error: "Invalid UUID string")
                 }
 
                 INVoiceShortcutCenter.shared.getVoiceShortcut(with: uuid) { (voiceShortcut, error) in
@@ -87,7 +87,7 @@ import IntentsUI
                         if let error = error as NSError? {
                             NSLog("Failed to fetch voice shortcuts with error: %@", error)
                         }
-                        self.sendStatusError(command)
+                        self.sendStatusError(command, error: "Cannot get shortcuts")
                         return
                     }
 
@@ -116,8 +116,8 @@ import IntentsUI
                     guard let voiceShortcuts = voiceShortcuts else {
                         if let error = error as NSError? {
                             NSLog("Failed to fetch voice shortcuts with error: %@", error)
-                            self.sendStatusError(command)
                         }
+                        self.sendStatusError(command, error: "Cannot get shortcuts")
                         return
                     }
 
