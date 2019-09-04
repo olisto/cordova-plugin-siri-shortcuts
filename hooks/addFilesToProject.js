@@ -383,7 +383,6 @@ module.exports = function (context) {
 
       // Add build settings for Swift support, bridging header and xcconfig files
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
-      console.log(configurations);
       for (var key in configurations) {
         if (typeof configurations[key].buildSettings !== 'undefined') {
           var buildSettingsObj = configurations[key].buildSettings;
@@ -415,8 +414,8 @@ module.exports = function (context) {
                 log('Added bridging header reference to build settings!', 'info');
               }
             } else {
+              // Also do for all other configurations
               if (projectContainsSwiftFiles) {
-                console.log("hoi");
                 buildSettingsObj['INTENTS_CODEGEN_LANGUAGE'] = 'Swift';
               }
             }
