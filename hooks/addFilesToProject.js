@@ -388,6 +388,12 @@ module.exports = function (context) {
           var buildSettingsObj = configurations[key].buildSettings;
           if (typeof buildSettingsObj['PRODUCT_NAME'] !== 'undefined') {
             var productName = buildSettingsObj['PRODUCT_NAME'];
+            console.log(productName);
+            if (productName === projectName) {
+              if(projectContainsSwiftFiles) {
+                buildSettingsObj['INTENTS_CODEGEN_LANGUAGE'] = 'Swift';
+              }
+            }
             if (productName.indexOf(extensionName) >= 0) {
               if (addXcconfig) {
                 configurations[key].baseConfigurationReference =
