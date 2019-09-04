@@ -303,11 +303,14 @@ module.exports = function (context) {
         'info'
       );
 
+		console.log(sourceFiles);
+
       // Also add intentdefinition files to the main target
       var idCount = 0;
       if (addIntentDefinitionFiles) {
         var targets = pbxProject.pbxNativeTargetSection();
         for (var uuid in targets) {
+			console.log(targets[uuid]);
           if (typeof targets[uuid].name !== 'undefined') {
             if (targets[uuid].name === projectName) {
               sourceFiles.forEach(sourcefile => {
