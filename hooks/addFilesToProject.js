@@ -209,9 +209,7 @@ module.exports = function (context) {
         }
       }
 
-      fs.readdirSync(extensionFolder).forEach(file => {
-        handleFile(file);
-      });
+      fs.readdirSync(extensionFolder).forEach(handleFile);
 
       log('Found following files in your extension folder:', 'info');
       console.log('Source-files: ');
@@ -302,7 +300,7 @@ module.exports = function (context) {
           ' source files to PbxGroup and PBXSourcesBuildPhase!',
           'info'
       );
-      
+
       // Add a new PBXResourcesBuildPhase for the Resources used by the extension (MainInterface.storyboard)
       var resourcesBuildPhase = pbxProject.addBuildPhase(
           [],
