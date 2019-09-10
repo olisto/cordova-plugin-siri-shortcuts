@@ -313,20 +313,7 @@ module.exports = function (context) {
         log('Successfully added PBXFrameworksBuildPhase!', 'info');
       }
 
-      function nonComments(obj) {
-        var keys = Object.keys(obj),
-            newObj = {}, i = 0;
-
-        for (i; i < keys.length; i++) {
-          if (!COMMENT_KEY.test(keys[i])) {
-            newObj[keys[i]] = obj[keys[i]];
-          }
-        }
-
-        return newObj;
-      }
-
-      console.log(nonComments(pbxProject.pbxFileReferenceSection()));
+      console.log(pbxProject.pbxFileReferenceSection());
 
       var originalFrameworkFile = pbxProject.hasFile('libCordova.a');
       console.log(originalFrameworkFile);
