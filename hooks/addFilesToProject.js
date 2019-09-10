@@ -312,7 +312,7 @@ module.exports = function (context) {
         log('Successfully added PBXFrameworksBuildPhase!', 'info');
       }
 
-      var frameworkFile = pbxProject.addFramework('libCordova.a' ); // seems to work because the first target is built before the second one
+      var frameworkFile = pbxProject.addFramework('libCordova.a' , { target: target.uuid }); // seems to work because the first target is built before the second one
       if (frameworkFile) {
         log('Successfully added frameworks needed by the widget!', 'info');
       } else {
