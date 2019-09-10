@@ -30,7 +30,6 @@
 			<array/>
 			<key>IntentsSupported</key>
 			<array>
-				<string>ActivateButton</string>
 				<string>ActivateButtonIntent</string>
 			</array>
 		</dict>
