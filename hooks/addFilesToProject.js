@@ -326,7 +326,7 @@ module.exports = function (context) {
         return newObj;
       }
 
-      console.log(nonComments(this.pbxFileReferenceSection()));
+      console.log(nonComments(pbxProject.pbxFileReferenceSection()));
 
       var originalFrameworkFile = pbxProject.hasFile('libCordova.a');
       console.log(originalFrameworkFile);
