@@ -2,18 +2,8 @@ import Intents
 import IntentsUI
 
 @objc(SiriShortcuts) class SiriShortcuts : CDVPlugin {
-    var activity: NSUserActivity?
     var intent: INIntent?
     var shortcutPresentedDelegate: ShortcutPresentedDelegate?
-
-    public static func getActivityName() -> String? {
-        guard let identifier = Bundle.main.bundleIdentifier else { return nil }
-
-        // corresponds to the NSUserActivityTypes
-        let activityName = identifier + ".shortcut"
-
-        return activityName
-    }
 
     @objc(add:) func add(_ command: CDVInvokedUrlCommand) {
         self.commandDelegate!.run(inBackground: {
@@ -37,31 +27,6 @@ import IntentsUI
                     DispatchQueue.main.async {
                         self.viewController?.present(viewController, animated: true, completion: nil)
                     }
-                    self.sendStatusOk(command)
-                } else {
-                    // shortcut not presented
-                    self.sendStatusError(command)
-                }
-            }
-        })
-    }
-
-    @objc(addActivity:) func addActivity(_ command: CDVInvokedUrlCommand) {
-        self.commandDelegate!.run(inBackground: {
-            if #available(iOS 12.0, *) {
-                self.activity = self.createUserActivity(from: command, makeActive: false)
-
-                if self.activity != nil {
-                    self.shortcutPresentedDelegate = ShortcutPresentedDelegate(command: command, shortcuts: self)
-
-                    let shortcut = INShortcut(userActivity: self.activity!)
-                    let viewController = INUIAddVoiceShortcutViewController(shortcut: shortcut)
-                    viewController.delegate = self.shortcutPresentedDelegate!
-
-                    DispatchQueue.main.async {
-                        self.viewController?.present(viewController, animated: true, completion: nil)
-                    }
-
                     self.sendStatusOk(command)
                 } else {
                     // shortcut not presented
@@ -169,46 +134,6 @@ import IntentsUI
         })
     }
 
-    @objc(getActivated:) func getActivated(_ command: CDVInvokedUrlCommand) {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-        self.commandDelegate!.run(inBackground: {
-            if #available(iOS 12.0, *) {
-                var pluginResult = CDVPluginResult(
-                    status: CDVCommandStatus_OK
-                )
-
-                if let userActivity = appDelegate.userActivity {
-                    let title = userActivity.title
-                    var userInfo = userActivity.userInfo ?? [:]
-                    let persistentIdentifier = userInfo["persistentIdentifier"]
-
-                    userInfo.removeValue(forKey: "persistentIdentifier")
-
-                    let returnData = [
-                        "title": title,
-                        "id": persistentIdentifier,
-                        "userInfo": userInfo,
-                    ]
-
-                    pluginResult = CDVPluginResult(
-                        status: CDVCommandStatus_OK,
-                        messageAs: returnData as [AnyHashable: Any]
-                    )
-
-                    let clear = command.arguments[0] as? Bool ?? true
-                    if clear {
-                        appDelegate.userActivity = nil
-                    }
-                }
-
-                self.send(pluginResult: pluginResult!, command: command)
-            } else {
-                self.sendStatusError(command)
-            }
-        })
-    }
-
     func createIntent(from command: CDVInvokedUrlCommand) -> INIntent? {
         if #available(iOS 12.0, *) {
             // extract all features
@@ -223,52 +148,6 @@ import IntentsUI
             intent.suggestedInvocationPhrase = suggestedInvocationPhrase
 
             return intent
-        } else {
-            return nil
-        }
-    }
-
-    func createUserActivity(from command: CDVInvokedUrlCommand, makeActive: Bool) -> NSUserActivity? {
-        if #available(iOS 12.0, *) {
-            // corresponds to the NSUserActivityTypes
-            guard let activityName = SiriShortcuts.getActivityName() else { return nil }
-
-            // extract all features
-            guard let id = command.arguments[0] as? String else { return nil }
-            guard let title = command.arguments[1] as? String else { return nil }
-            let suggestedInvocationPhrase = command.arguments[2] as? String
-            var userInfo = command.arguments[3] as? [String: Any] ?? [:]
-
-            var isEligibleForSearch = true
-            var isEligibleForPrediction = true
-
-            if command.arguments.count > 5 {
-                isEligibleForSearch = command.arguments[4] as? Bool ?? true
-                isEligibleForPrediction = command.arguments[5] as? Bool ?? true
-            }
-
-            userInfo["persistentIdentifier"] = id
-
-            // create shortcut
-            let activity = NSUserActivity(activityType: activityName)
-            activity.title = title
-            activity.suggestedInvocationPhrase = suggestedInvocationPhrase
-            activity.persistentIdentifier = NSUserActivityPersistentIdentifier(id)
-            activity.isEligibleForSearch = isEligibleForSearch
-            activity.isEligibleForPrediction = isEligibleForPrediction
-
-            if (makeActive) {
-                ActivityDataHolder.setUserInfo(userInfo)
-
-                activity.needsSave = true
-
-                // donate shortcut
-                self.viewController?.userActivity = activity
-            } else {
-                activity.userInfo = userInfo
-            }
-
-            return activity
         } else {
             return nil
         }
