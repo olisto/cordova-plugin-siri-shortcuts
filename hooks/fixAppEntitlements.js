@@ -12,7 +12,7 @@ function log(logString, type) {
   switch (type) {
     case 'error':
       prefix = '\x1b[1m' + '\x1b[31m' + '💥 😨 '; // bold, red
-      throw new Error(prefix + logString + 'x1b[0m'); // reset
+      throw new Error(prefix + logString + '\x1b[0m'); // reset
     case 'info':
       prefix =
         '\x1b[40m' +
