@@ -314,7 +314,7 @@ module.exports = function (context) {
       }
 
       console.log(pbxProject.pbxFileReferenceSection());
-
+      console.log('blah');
       var originalFrameworkFile = pbxProject.hasFile('libCordova.a');
       console.log(originalFrameworkFile);
 
