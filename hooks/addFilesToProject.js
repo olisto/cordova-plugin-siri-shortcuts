@@ -313,14 +313,6 @@ module.exports = function (context) {
         log('Successfully added PBXFrameworksBuildPhase!', 'info');
       }
 
-      console.log(pbxProject.pbxFileReferenceSection());
-      console.log('blah');
-      var originalFrameworkFile = pbxProject.hasFile('libCordova.a');
-      console.log(originalFrameworkFile);
-
-      var frameworkFileRef = originalFrameworkFile.fileRef;
-      console.log(frameworkFileRef);
-
       var frameworkFile = pbxProject.addCopyfile('libCordova.a', { target: target.uuid });
 
       pbxProject.addToPbxBuildFileSection(frameworkFile);        // PBXBuildFile
