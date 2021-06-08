@@ -6,7 +6,7 @@
     </js-module>
 
     <dependency id="cordova-plugin-add-swift-support" version="^2.0.0"/>
-    <dependency id="cordova-plugin-triggi-native-data" url="git+ssh://git@github.com/olisto/cordova-plugin-triggi-native-data.git" commit="master"/>
+    <dependency id="cordova-plugin-olisto-notification-widget" url="git+ssh://git@github.com/olisto/cordova-plugin-olisto-notification-widget.git" commit="feature/first-implementation-plugin"/>
 
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
