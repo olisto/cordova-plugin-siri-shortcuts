@@ -84,9 +84,9 @@ module.exports = function (context) {
   );
 
   // Get the plugin variables from the parameters or the config file
-  var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
-  var DEBUG_PROVISIONING_PROFILE = getCordovaParameter("DEBUG_PROVISIONING_PROFILE", contents);
-  var RELEASE_PROVISIONING_PROFILE = getCordovaParameter("RELEASE_PROVISIONING_PROFILE", contents);
+  var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("SIRI_ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
+  var DEBUG_PROVISIONING_PROFILE = getCordovaParameter("SIRI_DEBUG_PROVISIONING_PROFILE", contents);
+  var RELEASE_PROVISIONING_PROFILE = getCordovaParameter("SIRI_RELEASE_PROVISIONING_PROFILE", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
