@@ -318,7 +318,7 @@ module.exports = function (context) {
         target: target.uuid,
       }); // seems to work because the first target is built before the second one
       if (frameworkFile) {
-        log('Successfully added frameworks needed by the widget!', 'info');
+        log('Successfully added frameworks needed by the extension!', 'info');
       }
 
       // Add a new PBXResourcesBuildPhase for the Resources used by the extension (MainInterface.storyboard)
