@@ -125,8 +125,8 @@ module.exports = function(context) {
     }
 
     // Get the widget name and location from the parameters or the config file
-    var EXTENSION_PATH = getCordovaParameter("EXTENSION_PATH", contents);
-    var DEPENDENCIES = getCordovaParameter("DEPENDENCIES", contents);
+    var EXTENSION_PATH = getCordovaParameter("SIRI_EXTENSION_PATH", contents);
+    var DEPENDENCIES = getCordovaParameter("SIRI_DEPENDENCIES", contents);
 
     var dependencies = DEPENDENCIES ? DEPENDENCIES.split(',') : [];
     var extensionName = "SiriIntents";
