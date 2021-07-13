@@ -84,7 +84,9 @@ module.exports = function (context) {
   );
 
   // Get the plugin variables from the parameters or the config file
-  var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
+  var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("SIRI_ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
+  var DEBUG_PROVISIONING_PROFILE = getCordovaParameter("SIRI_DEBUG_PROVISIONING_PROFILE", contents);
+  var RELEASE_PROVISIONING_PROFILE = getCordovaParameter("SIRI_RELEASE_PROVISIONING_PROFILE", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
@@ -357,6 +359,18 @@ module.exports = function (context) {
                     bridgingHeaderName +
                     '"';
                 log('Added bridging header reference to build settings!', 'info');
+              }
+              if (DEBUG_PROVISIONING_PROFILE && configurations[key].name === 'Debug') {
+                buildSettingsObj['PROVISIONING_PROFILE'] = DEBUG_PROVISIONING_PROFILE;
+                buildSettingsObj['CODE_SIGN_STYLE'] = 'Manual';
+                buildSettingsObj['CODE_SIGN_IDENTITY'] = '"iPhone Distribution"';
+                log('Added signing identity to debug build settings!', 'info');
+              }
+              if (RELEASE_PROVISIONING_PROFILE && configurations[key].name === 'Release') {
+                buildSettingsObj['PROVISIONING_PROFILE'] = RELEASE_PROVISIONING_PROFILE;
+                buildSettingsObj['CODE_SIGN_STYLE'] = 'Manual';
+                buildSettingsObj['CODE_SIGN_IDENTITY'] = '"iPhone Distribution"';
+                log('Added signing identity to release build settings!', 'info');
               }
             } else {
               // Also do for all other configurations
