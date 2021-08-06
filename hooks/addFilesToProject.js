@@ -213,120 +213,129 @@ module.exports = function (context) {
 
       fs.readdirSync(extensionFolder).forEach(handleFile);
 
-      log('Found following files in your extension folder:', 'info');
-      console.log('Source-files: ');
-      sourceFiles.forEach(file => {
-        console.log(' - ', file);
-      });
+      // If the target was already added, don't readd, only update values
+      var existingTarget = pbxProject.findTargetKey(extensionName)
+      if (!existingTarget) {
+        log('Found following files in your extension folder:', 'info');
+        console.log('Source-files: ');
+        sourceFiles.forEach(file => {
+          console.log(' - ', file);
+        });
 
-      console.log('Config-files: ');
-      configFiles.forEach(file => {
-        console.log(' - ', file);
-      });
+        console.log('Config-files: ');
+        configFiles.forEach(file => {
+          console.log(' - ', file);
+        });
 
-      console.log('Resource-files: ');
-      resourceFiles.forEach(file => {
-        console.log(' - ', file);
-      });
+        console.log('Resource-files: ');
+        resourceFiles.forEach(file => {
+          console.log(' - ', file);
+        });
 
-      // Add PBXNativeTarget to the project
-      var target = pbxProject.addTarget(
-          extensionName,
-          'app_extension',
-          extensionName
-      );
-      if (target) {
-        log('Successfully added PBXNativeTarget!', 'info');
-      }
+        // Add PBXNativeTarget to the project
+        var target = pbxProject.addTarget(
+            extensionName,
+            'app_extension',
+            extensionName
+        );
+        if (target) {
+          log('Successfully added PBXNativeTarget!', 'info');
+        }
 
-      // Create a separate PBXGroup for the widgets files, name has to be unique and path must be in quotation marks
-      var pbxGroupKey = pbxProject.pbxCreateGroup(
-          'Siri',
-          '"' + extensionName + '"'
-      );
-      if (pbxGroupKey) {
+        // Create a separate PBXGroup for the widgets files, name has to be unique and path must be in quotation marks
+        var pbxGroupKey = pbxProject.pbxCreateGroup(
+            'Siri',
+            '"' + extensionName + '"'
+        );
+        if (pbxGroupKey) {
+          log(
+              'Successfully created empty PbxGroup for folder: ' +
+              extensionName +
+              ' with alias: Siri',
+              'info'
+          );
+        }
+
+        // Add the PbxGroup to cordovas "CustomTemplate"-group
+        var customTemplateKey = pbxProject.findPBXGroupKey({
+          name: 'CustomTemplate',
+        });
+        pbxProject.addToPbxGroup(pbxGroupKey, customTemplateKey);
         log(
-            'Successfully created empty PbxGroup for folder: ' +
-            extensionName +
-            ' with alias: Siri',
+            'Successfully added the widgets PbxGroup to cordovas CustomTemplate!',
+            'info'
+        );
+
+        // Add files which are not part of any build phase (config)
+        configFiles.forEach(configFile => {
+          var file = pbxProject.addFile(configFile, pbxGroupKey);
+          // We need the reference to add the xcconfig to the XCBuildConfiguration as baseConfigurationReference
+          if (path.extname(configFile) == '.xcconfig') {
+            xcconfigReference = file.fileRef;
+          }
+        });
+        log(
+            'Successfully added ' + configFiles.length + ' configuration files!',
+            'info'
+        );
+
+        // Add a new PBXSourcesBuildPhase for our TodayViewController (we can't add it to the existing one because a today extension is kind of an extra app)
+        var sourcesBuildPhase = pbxProject.addBuildPhase(
+            [],
+            'PBXSourcesBuildPhase',
+            'Sources',
+            target.uuid
+        );
+        if (sourcesBuildPhase) {
+          log('Successfully added PBXSourcesBuildPhase!', 'info');
+        }
+
+        // Add a new source file and add it to our PbxGroup and our newly created PBXSourcesBuildPhase
+        sourceFiles.forEach(sourcefile => {
+          pbxProject.addSourceFile(
+              sourcefile,
+              {target: target.uuid},
+              pbxGroupKey
+          );
+        });
+
+        log(
+            'Successfully added ' +
+            sourceFiles.length +
+            ' source files to PbxGroup and PBXSourcesBuildPhase!',
+            'info'
+        );
+
+        // Add a new PBXResourcesBuildPhase for the Resources used by the extension (MainInterface.storyboard)
+        var resourcesBuildPhase = pbxProject.addBuildPhase(
+            [],
+            'PBXResourcesBuildPhase',
+            'Resources',
+            target.uuid
+        );
+        if (resourcesBuildPhase) {
+          log('Successfully added PBXResourcesBuildPhase!', 'info');
+        }
+
+        //  Add the resource file and include it into the targest PbxResourcesBuildPhase and PbxGroup
+        resourceFiles.forEach(resourcefile => {
+          pbxProject.addResourceFile(
+              resourcefile,
+              {target: target.uuid},
+              pbxGroupKey
+          );
+        });
+
+        log(
+            'Successfully added ' + resourceFiles.length + ' resource files!',
+            'info'
+        );
+      } else {
+        log(
+            'Skipping adding target for ' + widgetName + ' because it was already added!',
             'info'
         );
       }
-
-      // Add the PbxGroup to cordovas "CustomTemplate"-group
-      var customTemplateKey = pbxProject.findPBXGroupKey({
-        name: 'CustomTemplate',
-      });
-      pbxProject.addToPbxGroup(pbxGroupKey, customTemplateKey);
-      log(
-          'Successfully added the widgets PbxGroup to cordovas CustomTemplate!',
-          'info'
-      );
-
-      // Add files which are not part of any build phase (config)
-      configFiles.forEach(configFile => {
-        var file = pbxProject.addFile(configFile, pbxGroupKey);
-        // We need the reference to add the xcconfig to the XCBuildConfiguration as baseConfigurationReference
-        if (path.extname(configFile) == '.xcconfig') {
-          xcconfigReference = file.fileRef;
-        }
-      });
-      log(
-          'Successfully added ' + configFiles.length + ' configuration files!',
-          'info'
-      );
-
-      // Add a new PBXSourcesBuildPhase for our TodayViewController (we can't add it to the existing one because a today extension is kind of an extra app)
-      var sourcesBuildPhase = pbxProject.addBuildPhase(
-          [],
-          'PBXSourcesBuildPhase',
-          'Sources',
-          target.uuid
-      );
-      if (sourcesBuildPhase) {
-        log('Successfully added PBXSourcesBuildPhase!', 'info');
-      }
-
-      // Add a new source file and add it to our PbxGroup and our newly created PBXSourcesBuildPhase
-      sourceFiles.forEach(sourcefile => {
-        pbxProject.addSourceFile(
-            sourcefile,
-            { target: target.uuid },
-            pbxGroupKey
-        );
-      });
-
-      log(
-          'Successfully added ' +
-          sourceFiles.length +
-          ' source files to PbxGroup and PBXSourcesBuildPhase!',
-          'info'
-      );
-
-      // Add a new PBXResourcesBuildPhase for the Resources used by the extension (MainInterface.storyboard)
-      var resourcesBuildPhase = pbxProject.addBuildPhase(
-          [],
-          'PBXResourcesBuildPhase',
-          'Resources',
-          target.uuid
-      );
-      if (resourcesBuildPhase) {
-        log('Successfully added PBXResourcesBuildPhase!', 'info');
-      }
-
-      //  Add the resource file and include it into the targest PbxResourcesBuildPhase and PbxGroup
-      resourceFiles.forEach(resourcefile => {
-        pbxProject.addResourceFile(
-            resourcefile,
-            { target: target.uuid },
-            pbxGroupKey
-        );
-      });
-
-      log(
-          'Successfully added ' + resourceFiles.length + ' resource files!',
-          'info'
-      );
 
       // Add build settings for Swift support, bridging header and xcconfig files
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
@@ -339,17 +348,17 @@ module.exports = function (context) {
               if (addXcconfig) {
                 configurations[key].baseConfigurationReference =
                     xcconfigReference + ' /* ' + xcconfigFileName + ' */';
-                log('Added xcconfig file reference to build settings!', 'info');
+                log(configurations[key].name + ': Added xcconfig file reference to build settings!', 'info');
               }
               if (addEntitlementsFile) {
                 buildSettingsObj['CODE_SIGN_ENTITLEMENTS'] = '"' + extensionName + '/' + entitlementsFileName + '"';
-                log('Added entitlements file reference to build settings!', 'info');
+                log(configurations[key].name + ': Added entitlements file reference to build settings!', 'info');
               }
               if (projectContainsSwiftFiles) {
                 buildSettingsObj['SWIFT_VERSION'] = '4.2';
                 buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES || 'YES';
                 buildSettingsObj['INTENTS_CODEGEN_LANGUAGE'] = 'Swift';
-                log('Added build settings for swift support!', 'info');
+                log(configurations[key].name + ': Added build settings for swift support!', 'info');
               }
               if (addBridgingHeader) {
                 buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] =
@@ -358,23 +367,23 @@ module.exports = function (context) {
                     '/' +
                     bridgingHeaderName +
                     '"';
-                log('Added bridging header reference to build settings!', 'info');
+                log(configurations[key].name + ': Added bridging header reference to build settings!', 'info');
               } else {
                 buildSettingsObj['SWIFT_INSTALL_OBJC_HEADER'] = 'NO';
                 buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] = '""';
-                log('No bridging header found: set installation to NO', 'info');
+                log(configurations[key].name + ': No bridging header found: set installation to NO', 'info');
               }
               if (DEBUG_PROVISIONING_PROFILE && configurations[key].name === 'Debug') {
                 buildSettingsObj['PROVISIONING_PROFILE'] = DEBUG_PROVISIONING_PROFILE;
                 buildSettingsObj['CODE_SIGN_STYLE'] = 'Manual';
                 buildSettingsObj['CODE_SIGN_IDENTITY'] = '"iPhone Distribution"';
-                log('Added signing identity to debug build settings!', 'info');
+                log(configurations[key].name + ': Added signing identity to build settings!', 'info');
               }
               if (RELEASE_PROVISIONING_PROFILE && configurations[key].name === 'Release') {
                 buildSettingsObj['PROVISIONING_PROFILE'] = RELEASE_PROVISIONING_PROFILE;
                 buildSettingsObj['CODE_SIGN_STYLE'] = 'Manual';
                 buildSettingsObj['CODE_SIGN_IDENTITY'] = '"iPhone Distribution"';
-                log('Added signing identity to release build settings!', 'info');
+                log(configurations[key].name + ': Added signing identity to build settings!', 'info');
               }
             } else {
               // Also do for all other configurations
