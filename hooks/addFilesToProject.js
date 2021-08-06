@@ -360,7 +360,7 @@ module.exports = function (context) {
                     '"';
                 log('Added bridging header reference to build settings!', 'info');
               } else {
-                buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] = ""
+                delete buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'];
               }
               if (DEBUG_PROVISIONING_PROFILE && configurations[key].name === 'Debug') {
                 buildSettingsObj['PROVISIONING_PROFILE'] = DEBUG_PROVISIONING_PROFILE;
