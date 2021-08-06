@@ -361,6 +361,7 @@ module.exports = function (context) {
                 log('Added bridging header reference to build settings!', 'info');
               } else {
                 buildSettingsObj['SWIFT_INSTALL_OBJC_HEADER'] = 'NO';
+                buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] = '';
                 log('No bridging header found: set installation to NO', 'info');
               }
               if (DEBUG_PROVISIONING_PROFILE && configurations[key].name === 'Debug') {
