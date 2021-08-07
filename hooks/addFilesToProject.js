@@ -332,7 +332,7 @@ module.exports = function (context) {
         );
       } else {
         log(
-            'Skipping adding target for ' + widgetName + ' because it was already added!',
+            'Skipping adding target for ' + extensionName + ' because it was already added!',
             'info'
         );
       }
