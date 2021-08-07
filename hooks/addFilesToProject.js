@@ -213,129 +213,120 @@ module.exports = function (context) {
 
       fs.readdirSync(extensionFolder).forEach(handleFile);
 
-      // If the target was already added, don't readd, only update values
-      var existingTarget = pbxProject.findTargetKey(extensionName)
-      if (!existingTarget) {
-        log('Found following files in your extension folder:', 'info');
-        console.log('Source-files: ');
-        sourceFiles.forEach(file => {
-          console.log(' - ', file);
-        });
+      log('Found following files in your extension folder:', 'info');
+      console.log('Source-files: ');
+      sourceFiles.forEach(file => {
+        console.log(' - ', file);
+      });
 
-        console.log('Config-files: ');
-        configFiles.forEach(file => {
-          console.log(' - ', file);
-        });
+      console.log('Config-files: ');
+      configFiles.forEach(file => {
+        console.log(' - ', file);
+      });
 
-        console.log('Resource-files: ');
-        resourceFiles.forEach(file => {
-          console.log(' - ', file);
-        });
+      console.log('Resource-files: ');
+      resourceFiles.forEach(file => {
+        console.log(' - ', file);
+      });
 
-        // Add PBXNativeTarget to the project
-        var target = pbxProject.addTarget(
-            extensionName,
-            'app_extension',
-            extensionName
-        );
-        if (target) {
-          log('Successfully added PBXNativeTarget!', 'info');
-        }
+      // Add PBXNativeTarget to the project
+      var target = pbxProject.addTarget(
+          extensionName,
+          'app_extension',
+          extensionName
+      );
+      if (target) {
+        log('Successfully added PBXNativeTarget!', 'info');
+      }
 
-        // Create a separate PBXGroup for the widgets files, name has to be unique and path must be in quotation marks
-        var pbxGroupKey = pbxProject.pbxCreateGroup(
-            'Siri',
-            '"' + extensionName + '"'
-        );
-        if (pbxGroupKey) {
-          log(
-              'Successfully created empty PbxGroup for folder: ' +
-              extensionName +
-              ' with alias: Siri',
-              'info'
-          );
-        }
-
-        // Add the PbxGroup to cordovas "CustomTemplate"-group
-        var customTemplateKey = pbxProject.findPBXGroupKey({
-          name: 'CustomTemplate',
-        });
-        pbxProject.addToPbxGroup(pbxGroupKey, customTemplateKey);
+      // Create a separate PBXGroup for the widgets files, name has to be unique and path must be in quotation marks
+      var pbxGroupKey = pbxProject.pbxCreateGroup(
+          'Siri',
+          '"' + extensionName + '"'
+      );
+      if (pbxGroupKey) {
         log(
-            'Successfully added the widgets PbxGroup to cordovas CustomTemplate!',
-            'info'
-        );
-
-        // Add files which are not part of any build phase (config)
-        configFiles.forEach(configFile => {
-          var file = pbxProject.addFile(configFile, pbxGroupKey);
-          // We need the reference to add the xcconfig to the XCBuildConfiguration as baseConfigurationReference
-          if (path.extname(configFile) == '.xcconfig') {
-            xcconfigReference = file.fileRef;
-          }
-        });
-        log(
-            'Successfully added ' + configFiles.length + ' configuration files!',
-            'info'
-        );
-
-        // Add a new PBXSourcesBuildPhase for our TodayViewController (we can't add it to the existing one because a today extension is kind of an extra app)
-        var sourcesBuildPhase = pbxProject.addBuildPhase(
-            [],
-            'PBXSourcesBuildPhase',
-            'Sources',
-            target.uuid
-        );
-        if (sourcesBuildPhase) {
-          log('Successfully added PBXSourcesBuildPhase!', 'info');
-        }
-
-        // Add a new source file and add it to our PbxGroup and our newly created PBXSourcesBuildPhase
-        sourceFiles.forEach(sourcefile => {
-          pbxProject.addSourceFile(
-              sourcefile,
-              {target: target.uuid},
-              pbxGroupKey
-          );
-        });
-
-        log(
-            'Successfully added ' +
-            sourceFiles.length +
-            ' source files to PbxGroup and PBXSourcesBuildPhase!',
-            'info'
-        );
-
-        // Add a new PBXResourcesBuildPhase for the Resources used by the extension (MainInterface.storyboard)
-        var resourcesBuildPhase = pbxProject.addBuildPhase(
-            [],
-            'PBXResourcesBuildPhase',
-            'Resources',
-            target.uuid
-        );
-        if (resourcesBuildPhase) {
-          log('Successfully added PBXResourcesBuildPhase!', 'info');
-        }
-
-        //  Add the resource file and include it into the targest PbxResourcesBuildPhase and PbxGroup
-        resourceFiles.forEach(resourcefile => {
-          pbxProject.addResourceFile(
-              resourcefile,
-              {target: target.uuid},
-              pbxGroupKey
-          );
-        });
-
-        log(
-            'Successfully added ' + resourceFiles.length + ' resource files!',
-            'info'
-        );
-      } else {
-        log(
-            'Skipping adding target for ' + extensionName + ' because it was already added!',
+            'Successfully created empty PbxGroup for folder: ' +
+            extensionName +
+            ' with alias: Siri',
             'info'
         );
       }
+
+      // Add the PbxGroup to cordovas "CustomTemplate"-group
+      var customTemplateKey = pbxProject.findPBXGroupKey({
+        name: 'CustomTemplate',
+      });
+      pbxProject.addToPbxGroup(pbxGroupKey, customTemplateKey);
+      log(
+          'Successfully added the widgets PbxGroup to cordovas CustomTemplate!',
+          'info'
+      );
+
+      // Add files which are not part of any build phase (config)
+      configFiles.forEach(configFile => {
+        var file = pbxProject.addFile(configFile, pbxGroupKey);
+        // We need the reference to add the xcconfig to the XCBuildConfiguration as baseConfigurationReference
+        if (path.extname(configFile) == '.xcconfig') {
+          xcconfigReference = file.fileRef;
+        }
+      });
+      log(
+          'Successfully added ' + configFiles.length + ' configuration files!',
+          'info'
+      );
+
+      // Add a new PBXSourcesBuildPhase for our TodayViewController (we can't add it to the existing one because a today extension is kind of an extra app)
+      var sourcesBuildPhase = pbxProject.addBuildPhase(
+          [],
+          'PBXSourcesBuildPhase',
+          'Sources',
+          target.uuid
+      );
+      if (sourcesBuildPhase) {
+        log('Successfully added PBXSourcesBuildPhase!', 'info');
+      }
+
+      // Add a new source file and add it to our PbxGroup and our newly created PBXSourcesBuildPhase
+      sourceFiles.forEach(sourcefile => {
+        pbxProject.addSourceFile(
+            sourcefile,
+            { target: target.uuid },
+            pbxGroupKey
+        );
+      });
+
+      log(
+          'Successfully added ' +
+          sourceFiles.length +
+          ' source files to PbxGroup and PBXSourcesBuildPhase!',
+          'info'
+      );
+
+      // Add a new PBXResourcesBuildPhase for the Resources used by the extension (MainInterface.storyboard)
+      var resourcesBuildPhase = pbxProject.addBuildPhase(
+          [],
+          'PBXResourcesBuildPhase',
+          'Resources',
+          target.uuid
+      );
+      if (resourcesBuildPhase) {
+        log('Successfully added PBXResourcesBuildPhase!', 'info');
+      }
+
+      //  Add the resource file and include it into the targest PbxResourcesBuildPhase and PbxGroup
+      resourceFiles.forEach(resourcefile => {
+        pbxProject.addResourceFile(
+            resourcefile,
+            { target: target.uuid },
+            pbxGroupKey
+        );
+      });
+
+      log(
+          'Successfully added ' + resourceFiles.length + ' resource files!',
+          'info'
+      );
 
       // Add build settings for Swift support, bridging header and xcconfig files
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
