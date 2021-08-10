@@ -339,17 +339,17 @@ module.exports = function (context) {
               if (addXcconfig) {
                 configurations[key].baseConfigurationReference =
                     xcconfigReference + ' /* ' + xcconfigFileName + ' */';
-                log('Added xcconfig file reference to build settings!', 'info');
+                log(configurations[key].name + ': Added xcconfig file reference to build settings!', 'info');
               }
               if (addEntitlementsFile) {
                 buildSettingsObj['CODE_SIGN_ENTITLEMENTS'] = '"' + extensionName + '/' + entitlementsFileName + '"';
-                log('Added entitlements file reference to build settings!', 'info');
+                log(configurations[key].name + ': Added entitlements file reference to build settings!', 'info');
               }
               if (projectContainsSwiftFiles) {
                 buildSettingsObj['SWIFT_VERSION'] = '4.2';
                 buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES || 'YES';
                 buildSettingsObj['INTENTS_CODEGEN_LANGUAGE'] = 'Swift';
-                log('Added build settings for swift support!', 'info');
+                log(configurations[key].name + ': Added build settings for swift support!', 'info');
               }
               if (addBridgingHeader) {
                 buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] =
@@ -358,19 +358,23 @@ module.exports = function (context) {
                     '/' +
                     bridgingHeaderName +
                     '"';
-                log('Added bridging header reference to build settings!', 'info');
+                log(configurations[key].name + ': Added bridging header reference to build settings!', 'info');
+              } else {
+                buildSettingsObj['SWIFT_INSTALL_OBJC_HEADER'] = 'NO';
+                buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] = '""';
+                log(configurations[key].name + ': No bridging header found: set installation to NO', 'info');
               }
               if (DEBUG_PROVISIONING_PROFILE && configurations[key].name === 'Debug') {
                 buildSettingsObj['PROVISIONING_PROFILE'] = DEBUG_PROVISIONING_PROFILE;
                 buildSettingsObj['CODE_SIGN_STYLE'] = 'Manual';
                 buildSettingsObj['CODE_SIGN_IDENTITY'] = '"iPhone Distribution"';
-                log('Added signing identity to debug build settings!', 'info');
+                log(configurations[key].name + ': Added signing identity to build settings!', 'info');
               }
               if (RELEASE_PROVISIONING_PROFILE && configurations[key].name === 'Release') {
                 buildSettingsObj['PROVISIONING_PROFILE'] = RELEASE_PROVISIONING_PROFILE;
                 buildSettingsObj['CODE_SIGN_STYLE'] = 'Manual';
                 buildSettingsObj['CODE_SIGN_IDENTITY'] = '"iPhone Distribution"';
-                log('Added signing identity to release build settings!', 'info');
+                log(configurations[key].name + ': Added signing identity to build settings!', 'info');
               }
             } else {
               // Also do for all other configurations
